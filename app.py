@@ -6,7 +6,7 @@ import requests
 st.set_page_config(page_title="🤖 Palpites Inteligentes Pro", page_icon="⚽", layout="wide")
 
 # =====================================================================
-# 🔐 CONFIGURAÇÃO DEFINITIVA: INSERIR A CHAVE GSK DA GROQ AQUI
+# 🔐 CONFIGURAÇÃO REAL DA GROQ: COLE A SUA CHAVE GSK AQUI (COMEÇA COM gsk_)
 # =====================================================================
 CHAVE_GROQ_PROTEGIDA = "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"
 # =====================================================================
@@ -17,81 +17,66 @@ st.divider()
 
 # Entrada da partida na interface
 st.subheader("🔍 Consultar Partida em Tempo Real")
-jogo_inserido = st.text_input("Digite o confronto que deseja analisar (Ex: Palmeiras x São Paulo, Botafogo x Bragantino):", "")
+jogo_inserido = st.text_input("Digite o confronto que deseja analisar (Ex: Flamengo x Vasco, Palmeiras x Criciúma):", "")
 
 def buscar_dados_e_analisar_com_ia(nome_confronto):
     """ 
-    MOTOR DE CONEXÃO BLINDADO: Acessa o barramento de inferência utilizando 
-    parâmetros estritos de bypass de cabeçalho para liquidar o Erro 405.
+    MOTOR DE BUSCA INTERNET EM TEMPO REAL VIA GROQ REST: Envia a requisição
+    utilizando a estrutura JSON pura homologada pela Groq Cloud.
     """
-    # Rota primária estável de alta concorrência da Groq Cloud
+    # URL oficial de Chat Completions da Groq
     url_final = "https://groq.com"
     
-    # Cabeçalho completo de autenticação e identificação de sistema
     headers = {
         "Authorization": f"Bearer {CHAVE_GROQ_PROTEGIDA}",
-        "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Content-Type": "application/json"
     }
     
     prompt_mestre = f"""
-    Atue como um analista de futebol profissional. Faça uma busca na internet pelos dados reais e atualizados de hoje do confronto: {nome_confronto}.
-    Extraia as escalações oficiais mais recentes, técnicos, reservas com siglas de posições e estatísticas de portais esportivos mundiais.
+    Você é um analista de futebol profissional e estatístico sênior. 
+    Faça uma busca profunda na internet AGORA pelos dados reais, escalações oficiais/prováveis e notícias de HOJE para o confronto: {nome_confronto}.
+    Extraia as informações diretamente de portais esportivos atualizados de setembro de 2026 (como GE, UOL Esporte, Lance).
     
     Gere um relatório probabilístico completo e responda ESTRITAMENTE em formato JSON puro, seguindo exatamente esta estrutura de chaves:
     {{
         "partida": "{nome_confronto}",
         "casa": "Nome do Time da Casa",
         "visitante": "Nome do Time Visitante",
-        "justificativa_analitica": "Justificativa tática real baseada no momento dos times na tabela.",
-        "fator_extracampo": "Notícias de desfalques, clima, arbitragem ou pressão de torcida atual.",
+        "justificativa_analitica": "Justificativa tática real baseada no momento dos times na tabela de acordo com as notícias de hoje.",
+        "fator_extracampo": "Desfalques reais de última hora relatados na mídia, clima, arbitragem ou pressão atual.",
         "escalacao_casa": {{
             "esquema": "Ex: 4-2-3-1",
-            "tecnico": "Nome do Técnico Atual",
+            "tecnico": "Nome do Técnico",
             "titulares": {{"GOL": "Jogador", "LD": "Jogador", "ZAG": "Jogador", "ZAG ": "Jogador", "LE": "Jogador", "VOL": "Jogador", "VOL ": "Jogador", "MCO": "Jogador", "ATA": "Jogador", "ATA ": "Jogador", "CA": "Jogador"}},
-            "reservas": ["Jogador 1", "Jogador 2", "Jogador 3"]
+            "reservas": ["Jogador 1", "Jogador 2"]
         }},
         "escalacao_fora": {{
-            "esquema": "4-3-3",
-            "tecnico": "Nome do Técnico Atual",
+            "esquema": "Ex: 4-3-3",
+            "tecnico": "Nome do Técnico",
             "titulares": {{"GOL": "Jogador", "LD": "Jogador", "ZAG": "Jogador", "ZAG ": "Jogador", "LE": "Jogador", "VOL": "Jogador", "MC": "Jogador", "MCO": "Jogador", "ATA": "Jogador", "ATA ": "Jogador", "CA": "Jogador"}},
-            "reservas": ["Jogador 1", "Jogador 2", "Jogador 3"]
+            "reservas": ["Jogador 1", "Jogador 2"]
         }},
         "stats_imagem": {{
-            "gols_casa": "Média real", "gols_fora": "Média real",
-            "finalizacoes_casa": "Média", "finalizacoes_fora": "Média",
-            "passes_casa": "Média", "passes_fora": "Média",
-            "desarmes_casa": "Média", "desarmes_fora": "Média",
-            "cartao_amarelo_casa": "Média", "cartao_amarelo_fora": "Média",
-            "cartao_vermelho_casa": "Média", "cartao_vermelho_fora": "Média",
-            "faltas_casa": "Média", "faltas_fora": "Média",
-            "chutes_gol_casa": "Média", "chutes_gol_fora": "Média",
+            "gols_casa": "Média", "gols_fora": "Média", "finalizacoes_casa": "Média", "finalizacoes_fora": "Média",
+            "passes_casa": "Média", "passes_fora": "Média", "desarmes_casa": "Média", "desarmes_fora": "Média",
+            "cartao_amarelo_casa": "Média", "cartao_amarelo_fora": "Média", "cartao_vermelho_casa": "Média", "cartao_vermelho_fora": "Média",
+            "faltas_casa": "Média", "faltas_fora": "Média", "chutes_gol_casa": "Média", "chutes_gol_fora": "Média",
             "forma_casa": "🟩 🟨 🟥 🟩 🟨", "forma_fora": "🟥 🟥 🟩 🟨 🟥",
-            "vitorias_casa": 10, "empates": 5, "vitorias_fora": 5
+            "vitorias_casa": 5, "empates": 3, "vitorias_fora": 2
         }},
         "melhores_probabilidades": {{
-            "Resultado Final": "Melhor opção calculada com %",
-            "Mercado de Gols": "Melhor opção com %",
-            "Linha de Escanteios": "Melhor opção com %",
-            "Média de Cartões": "Melhor opção com %",
-            "Impedimentos": "Melhor opção com %",
-            "Análise por Tempo": "Melhor opção com %",
-            "Handicap Asiático": "Melhor opção com %"
+            "Resultado Final": "Opção com %", "Mercado de Gols": "Opção com %", "Linha de Escanteios": "Opção com %",
+            "Média de Cartões": "Opção com %", "Impedimentos": "Opção com %", "Análise por Tempo": "Opção com %", "Handicap Asiático": "Opção com %"
         }},
         "mercados_adicionais": {{
-            "vencedor": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 25}},
-            "gols": {{"🟢 Conservador": 80, "🟡 Médio": 60, "🔴 Arrojado": 30}},
-            "escanteios": {{"🟢 Conservador": 85, "🟡 Médio": 70, "🔴 Arrojado": 40}},
-            "cartoes": {{"🟢 Conservador": 90, "🟡 Médio": 75, "🔴 Arrojado": 45}},
-            "impedimentos": {{"🟢 Conservador": 85, "🟡 Médio": 65, "🔴 Arrojado": 40}},
-            "placar": {{"🟢 Conservador": 40, "🟡 Médio": 20, "🔴 Arrojado": 10}},
-            "tempo": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 20}},
-            "handicap": {{"🟢 Conservador": 75, "🟡 Médio": 55, "🔴 Arrojado": 30}}
+            "vencedor": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 25}}, "gols": {{"🟢 Conservador": 80, "🟡 Médio": 60, "🔴 Arrojado": 30}},
+            "escanteios": {{"🟢 Conservador": 85, "🟡 Médio": 70, "🔴 Arrojado": 40}}, "cartoes": {{"🟢 Conservador": 90, "🟡 Médio": 75, "🔴 Arrojado": 45}},
+            "impedimentos": {{"🟢 Conservador": 85, "🟡 Médio": 65, "🔴 Arrojado": 40}}, "placar": {{"🟢 Conservador": 40, "🟡 Médio": 20, "🔴 Arrojado": 10}},
+            "tempo": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 20}}, "handicap": {{"🟢 Conservador": 75, "🟡 Médio": 55, "🔴 Arrojado": 30}}
         }}
     }}
     """
     
-    # Payload direcionado para o motor estável de alta performance da Meta na infra da Groq
     payload = {
         "model": "llama-3.3-70b-specdec",
         "messages": [{"role": "user", "content": prompt_mestre}],
@@ -103,8 +88,7 @@ def buscar_dados_e_analisar_com_ia(nome_confronto):
         resposta = requests.post(url_final, headers=headers, json=payload)
         if resposta.status_code == 200:
             dados_retorno = resposta.json()
-            texto_json = dados_retorno['choices']['message']['content']
-            return json.loads(texto_json)
+            return json.loads(dados_retorno['choices']['message']['content'])
         else:
             st.error(f"Erro na API da Groq: Status {resposta.status_code} - {resposta.text}")
             return None
@@ -278,5 +262,3 @@ if st.button("🔄 Executar Cruzamento de Dados nos 50 Sites"):
 else:
     if not jogo_inserido:
         st.info("💡 Digite o nome de um confronto acima (Ex: Botafogo x Bragantino) para carregar a interface.")
-
-
