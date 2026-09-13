@@ -6,13 +6,13 @@ import requests
 st.set_page_config(page_title="🤖 Palpites Inteligentes Pro", page_icon="⚽", layout="wide")
 
 # =====================================================================
-# 🔐 CONFIGURAÇÃO REAL DA OPENAI: COLE A SUA CHAVE SEVERA AQUI (sk-...)
+# 🔐 CONFIGURAÇÃO REAL: INSIRA A SUA CHAVE DA NOVA INFRAESTRUTURA DO GOOGLE (COMEÇA COM AQ)
 # =====================================================================
-CHAVE_OPENAI_PROTEGIDA = "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"
-# =====================================================================
+GCP_API_KEY = st.secrets["GCP_API_KEY"]
+=============================================
 
 st.title("⚽ Módulo de Análise Esportiva Automatizado")
-st.markdown("Busca de dados em tempo real nos portais de futebol com cruzamento de IA oficial da OpenAI.")
+st.markdown("Busca de dados em tempo real nos portais de futebol com cruzamento de IA nativa do Google.")
 st.divider()
 
 # Entrada da partida na interface
@@ -21,14 +21,14 @@ jogo_inserido = st.text_input("Digite o confronto que deseja analisar (Ex: Flame
 
 def buscar_dados_e_analisar_com_ia(nome_confronto):
     """ 
-    MOTOR UNIVERSAL OPENAI: Envia a requisição REST pura para a API oficial da OpenAI.
-    Bypassa 100% o erro 405 por utilizar a rota de produção global homologada.
+    MOTOR DE BUSCA GEMINI COM GOOGLE SEARCH GROUNDING: Envia a requisição utilizando 
+    a URL e cabeçalhos nativos para chaves AQ, ativando a busca ao vivo na internet.
     """
-    # URL padrão internacional da OpenAI que aceita requisições diretas sem travas
-    url_final = "https://openai.com"
+    # Rota estável v1beta de produção da Google API
+    url_final = f"https://googleapis.com{CHAVE_NATIVA_GOOGLE}"
     
     headers = {
-        "Authorization": f"Bearer {CHAVE_OPENAI_PROTEGIDA}",
+        "x-goog-api-key": CHAVE_NATIVA_GOOGLE,
         "Content-Type": "application/json"
     }
     
@@ -42,62 +42,78 @@ def buscar_dados_e_analisar_com_ia(nome_confronto):
         "partida": "{nome_confronto}",
         "casa": "Nome do Time da Casa",
         "visitante": "Nome do Time Visitante",
-        "justificativa_analitica": "Justificativa tática real baseada no momento dos times na tabela de acordo com as notícias de hoje.",
+        "justificativa_analitica": "Justificativa tática real baseada no momento dos times na tabela de acordo com as notícias coletadas hoje.",
         "fator_extracampo": "Desfalques reais de última hora relatados na mídia, clima, arbitragem ou pressão atual.",
         "escalacao_casa": {{
             "esquema": "Ex: 4-2-3-1",
-            "tecnico": "Nome do Técnico",
+            "tecnico": "Nome do Técnico Atual do Time da Casa",
             "titulares": {{"GOL": "Jogador", "LD": "Jogador", "ZAG": "Jogador", "ZAG ": "Jogador", "LE": "Jogador", "VOL": "Jogador", "VOL ": "Jogador", "MCO": "Jogador", "ATA": "Jogador", "ATA ": "Jogador", "CA": "Jogador"}},
-            "reservas": ["Jogador 1", "Jogador 2"]
+            "reservas": ["Jogador 1", "Jogador 2", "Jogador 3", "Jogador 4"]
         }},
         "escalacao_fora": {{
             "esquema": "Ex: 4-3-3",
-            "tecnico": "Nome do Técnico",
+            "tecnico": "Nome do Técnico Atual do Time Visitante",
             "titulares": {{"GOL": "Jogador", "LD": "Jogador", "ZAG": "Jogador", "ZAG ": "Jogador", "LE": "Jogador", "VOL": "Jogador", "MC": "Jogador", "MCO": "Jogador", "ATA": "Jogador", "ATA ": "Jogador", "CA": "Jogador"}},
-            "reservas": ["Jogador 1", "Jogador 2"]
+            "reservas": ["Jogador 1", "Jogador 2", "Jogador 3", "Jogador 4"]
         }},
         "stats_imagem": {{
-            "gols_casa": "Média", "gols_fora": "Média", "finalizacoes_casa": "Média", "finalizacoes_fora": "Média",
-            "passes_casa": "Média", "passes_fora": "Média", "desarmes_casa": "Média", "desarmes_fora": "Média",
-            "cartao_amarelo_casa": "Média", "cartao_amarelo_fora": "Média", "cartao_vermelho_casa": "Média", "cartao_vermelho_fora": "Média",
-            "faltas_casa": "Média", "faltas_fora": "Média", "chutes_gol_casa": "Média", "chutes_gol_fora": "Média",
-            "forma_casa": "🟩 🟨 🟥 🟩 🟨", "forma_fora": "🟥 🟥 🟩 🟨 🟥",
-            "vitorias_casa": 5, "empates": 3, "vitorias_fora": 2
+            "gols_casa": "Média real", "gols_fora": "Média real",
+            "finalizacoes_casa": "Média", "finalizacoes_fora": "Média",
+            "passes_casa": "Média", "passes_fora": "Média",
+            "desarmes_casa": "Média", "desarmes_fora": "Média",
+            "cartao_amarelo_casa": "Média", "cartao_amarelo_fora": "Média",
+            "cartao_vermelho_casa": "Média", "cartao_vermelho_fora": "Média",
+            "faltas_casa": "Média", "faltas_fora": "Média",
+            "chutes_gol_casa": "Média", "chutes_gol_fora": "Média",
+            "forma_casa": "Emojis das últimas 5 partidas (ex: 🟩 🟨 🟥)", "forma_fora": "Emojis das últimas 5 partidas",
+            "vitorias_casa": 10, "empates": 5, "vitorias_fora": 5
         }},
         "melhores_probabilidades": {{
-            "Resultado Final": "Opção com %", "Mercado de Gols": "Opção com %", "Linha de Escanteios": "Opção com %",
-            "Média de Cartões": "Opção com %", "Impedimentos": "Opção com %", "Análise por Tempo": "Opção com %", "Handicap Asiático": "Opção com %"
+            "Resultado Final": "Melhor opção calculada com %",
+            "Mercado de Gols": "Melhor opção com %",
+            "Linha de Escanteios": "Melhor opção com %",
+            "Média de Cartões": "Melhor opção com %",
+            "Impedimentos": "Melhor opção com %",
+            "Análise por Tempo": "Melhor opção com %",
+            "Handicap Asiático": "Melhor opção com %"
         }},
         "mercados_adicionais": {{
-            "vencedor": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 25}}, "gols": {{"🟢 Conservador": 80, "🟡 Médio": 60, "🔴 Arrojado": 30}},
-            "escanteios": {{"🟢 Conservador": 85, "🟡 Médio": 70, "🔴 Arrojado": 40}}, "cartoes": {{"🟢 Conservador": 90, "🟡 Médio": 75, "🔴 Arrojado": 45}},
-            "impedimentos": {{"🟢 Conservador": 85, "🟡 Médio": 65, "🔴 Arrojado": 40}}, "placar": {{"🟢 Conservador": 40, "🟡 Médio": 20, "🔴 Arrojado": 10}},
-            "tempo": {{"🟢 Conservador": 80, "🟡 Médio": 50, "🔴 Arrojado": 20}}, "handicap": {{"🟢 Conservador": 75, "🟡 Médio": 55, "🔴 Arrojado": 30}}
+            "vencedor": {{"🟢 Linha Conservadora": 80, "🟡 Linha Média": 50, "🔴 Linha Arrojada": 25}},
+            "gols": {{"🟢 Linha Conservadora": 80, "🟡 Linha Média": 60, "🔴 Linha Arrojada": 30}},
+            "escanteios": {{"🟢 Linha Conservadora": 85, "🟡 Linha Média": 70, "🔴 Linha Arrojada": 40}},
+            "cartoes": {{"🟢 Linha Conservadora": 90, "🟡 Linha Média": 75, "🔴 Linha Arrojada": 45}},
+            "impedimentos": {{"🟢 Linha Conservadora": 85, "🟡 Linha Média": 65, "🔴 Linha Arrojada": 40}},
+            "placar": {{"🟢 Linha Conservadora": 40, "🟡 Linha Média": 20, "🔴 Linha Arrojada": 10}},
+            "tempo": {{"🟢 Linha Conservadora": 80, "🟡 Linha Média": 50, "🔴 Linha Arrojada": 20}},
+            "handicap": {{"🟢 Linha Conservadora": 75, "🟡 Linha Média": 55, "🔴 Linha Arrojada": 30}}
         }}
     }}
     """
     
+    # 🚨 ATIVAÇÃO NATIVA DA BUSCA AO VIVO (Google Search Grounding)
     payload = {
-        "model": "gpt-4o-mini",  # Modelo de produção estável e veloz da OpenAI
-        "messages": [{"role": "user", "content": prompt_mestre}],
-        "response_format": {"type": "json_object"},
-        "temperature": 0.2
+        "contents": [{"parts": [{"text": prompt_mestre}]}],
+        "tools": [{"googleSearch": {}}],  # Força o Gemini a varrer a internet na hora
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "temperature": 0.15
+        }
     }
     
     try:
         resposta = requests.post(url_final, headers=headers, json=payload)
         if resposta.status_code == 200:
-            dados_retorno = resposta.json()
-            return json.loads(dados_retorno['choices']['message']['content'])
+            texto_json = resposta.json()['candidates']['content']['parts']['text']
+            return json.loads(texto_json)
         else:
-            st.error(f"Erro na API da OpenAI: Status {resposta.status_code} - {resposta.text}")
+            st.error(f"Erro na API da Google: Status {resposta.status_code} - {resposta.text}")
             return None
     except Exception as e:
-        st.error(f"Falha na conexão local: {e}")
+        st.error(f"Falha na conexão de rede: {e}")
         return None
-# 2. EXECUÇÃO DA BUSCA AUTOMÁTICA EM TEMPO REAL
+# 2. EXECUÇÃO DA BUSCA AUTOMÁTICA EM TEMPO REAL COM O NOVO MOTOR NATIVO
 if jogo_inserido:
-    with st.spinner("🤖 IA varrendo portais esportivos e extraindo dados em tempo real..."):
+    with st.spinner("🤖 IA varrendo portais esportivos reais com Google Search Grounding de hoje..."):
         dados_jogo = buscar_dados_e_analisar_com_ia(jogo_inserido)
         
     if dados_jogo:
@@ -165,7 +181,6 @@ if jogo_inserido:
             
             m_adicionais = dados_jogo.get("mercados_adicionais", {})
             
-            # Estrutura de loops com list().keys() para compatibilidade estrita com Python 3.14
             with aba1:
                 st.markdown("### 🏆 Probabilidades de Vitória / Resultado Final")
                 for chave in list(m_adicionais.get("vencedor", {}).keys()):
