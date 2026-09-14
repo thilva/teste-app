@@ -17,6 +17,8 @@ query = st.text_input(
     placeholder="Ex: Resultados dos jogos da Champions League de hoje"
 )
 
+import requests  # Certifique-se de que este import está no topo ou use aqui
+
 if st.button("Buscar Informações"):
     if not api_key:
         st.error("Por favor, insira a sua Chave de API para continuar.")
@@ -25,22 +27,30 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # 1. Inicializa o cliente forçando o cabeçalho correto para evitar o erro 401
-                client = genai.Client(
-                    api_key=api_key,
-                    http_options={'headers': {'x-goog-api-key': api_key}}
-                )
+                # 1. Configuração da URL oficial da API do Gemini utilizando a sua chave diretamente
+                url = f"https://googleapis.com{api_key}"
                 
-                # 2. Faz a chamada direta ao modelo 
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
-                )
+                # 2. Estrutura de dados exata que a API da Google espera
+                payload = {
+                    "contents": [{
+                        "parts": [{
+                            "text": f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
+                        }]
+                    }]
+                }
                 
-                # 3. Exibe o resultado no ecrã do Streamlit
-                st.subheader("📊 Resultados Encontrados:")
-                st.markdown(response.text)
-
+                # 3. Envio da requisição direta via HTTP POST
+                response = requests.post(url, json=payload)
+                data = response.json()
+                
+                # 4. Tratamento da resposta ou exibição de erros da API
+                if response.status_code == 200:
+                    texto_resposta = data['candidates'][0]['content']['parts'][0]['text']
+                    st.subheader("📊 Resultados Encontrados:")
+                    st.markdown(texto_resposta)
+                else:
+                    erro_msg = data.get('error', {}).get('message', 'Erro desconhecido')
+                    st.error(f"Erro da API do Google ({response.status_code}): {erro_msg}")
+                    
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
-                st.info("Verifique se a sua chave de API está correta.")
