@@ -1,6 +1,5 @@
 import streamlit as st
-from google import genai
-from google.genai import types
+import requests
 
 # Configuração da página do Streamlit
 st.set_page_config(page_title="Resultados Desportivos Ao Vivo", page_icon="⚽", layout="wide")
@@ -17,8 +16,6 @@ query = st.text_input(
     placeholder="Ex: Resultados dos jogos da Champions League de hoje"
 )
 
-import requests  # Certifique-se de que este import está no topo ou use aqui
-
 if st.button("Buscar Informações"):
     if not api_key:
         st.error("Por favor, insira a sua Chave de API para continuar.")
@@ -27,10 +24,10 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # 1. URL montada de forma direta para evitar erros de rota
+                # URL oficial unificada e isolada. A chave de API entra estritamente após o '?key='
                 url_completa = f"https://googleapis.com{api_key}"
                 
-                # 2. Estrutura de dados exigida pela API do Gemini
+                # Estrutura de dados exata exigida pelo Gemini
                 payload = {
                     "contents": [{
                         "parts": [{
@@ -39,17 +36,17 @@ if st.button("Buscar Informações"):
                     }]
                 }
                 
-                # 3. Envio da requisição direta via HTTP POST
+                # Envio da requisição direta via HTTP POST
                 response = requests.post(url_completa, json=payload)
                 
-                # 4. Tratamento seguro da resposta do servidor
+                # Verifica se o servidor aceitou a chamada antes de tratar o JSON
                 if response.status_code != 200:
                     st.error(f"Erro da API do Google (Código {response.status_code})")
                     st.text(f"Detalhes do erro do servidor:\n{response.text}")
                 else:
                     data = response.json()
                     
-                    # Navegação segura pela estrutura de dados
+                    # Navegação segura pelos índices e listas da resposta do Gemini 2.5
                     if 'candidates' in data and len(data['candidates']) > 0:
                         candidate = data['candidates'][0]
                         if 'content' in candidate and 'parts' in candidate['content'] and len(candidate['content']['parts']) > 0:
