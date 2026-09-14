@@ -25,18 +25,25 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # 1. Inicializa o cliente oficial com a nova chave AQ...
-                client = genai.Client(api_key=api_key)
+            try:
+                # CORREÇÃO DEFINITIVA PARA O ERRO 401:
+                # Passamos a chave de forma explícita e configuramos também o parâmetro http_options 
+                # para garantir que o cabeçalho correto de API Key é enviado.
+                client = genai.Client(
+                    api_key=api_key,
+                    http_options={'headers': {'x-goog-api-key': api_key}}
+                )
                 
-                # 2. Faz a chamada direta ao modelo sem usar o config problemático
+                # Faz a chamada direta ao modelo 
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
                     contents=f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                 )
                 
-                # 3. Exibe o resultado no ecrã do Streamlit
+                # Exibe o resultado no ecrã do Streamlit
                 st.subheader("📊 Resultados Encontrados:")
                 st.markdown(response.text)
+
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
