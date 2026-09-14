@@ -24,13 +24,19 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # Isolamos completamente a URL para o Python nunca juntar as palavras
-                url_base = "https://googleapis.com"
+                # Remove espaços em branco invisíveis
+                entrada_chave = api_key.strip()
                 
-                # Remove espaços em branco invisíveis que possam vir na colagem da chave
-                chave_limpa = api_key.strip()
+                # SEgurança Máxima: Se colou a URL inteira por engano, extrai apenas o que vem após o '?key='
+                if "?key=" in entrada_chave:
+                    chave_limpa = entrada_chave.split("?key=")[-1]
+                elif "googleapis.com" in entrada_chave:
+                    # Remove o domínio antigo se ele estiver colado antes da chave AQ...
+                    chave_limpa = entrada_chave.replace("googleapis.com", "")
+                else:
+                    chave_limpa = entrada_chave
                 
-                url_completa = f"{url_base}?key={chave_limpa}"
+                url_completa = f"https://googleapis.com{chave_limpa}"
                 
                 # Estrutura de dados exata exigida pelo Gemini
                 payload = {
