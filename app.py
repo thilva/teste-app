@@ -26,31 +26,30 @@ if st.button("Buscar Informações"):
         st.warning("Por favor, digite o que deseja procurar.")
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
-             try:
-                # CORREÇÃO DEFINITIVA DA URL: Montamos a string de forma direta e unificada
-                # Isso impede o servidor do Google de redirecionar a chamada para a página inicial '/'
+            try:
+                # 1. URL montada de forma direta para evitar erros de rota
                 url_completa = f"https://googleapis.com{api_key}"
                 
-                # 2. Estrutura de dados exata exigida pelo Gemini
+                # 2. Estrutura de dados exigida pela API do Gemini
                 payload = {
                     "contents": [{
                         "parts": [{
-                            "text": f"Você é um assistente esportivo em tempo real. Forneça as informações esportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
+                            "text": f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                         }]
                     }]
                 }
                 
-                # 3. Envio da requisição direta usando apenas a URL unificada
+                # 3. Envio da requisição direta via HTTP POST
                 response = requests.post(url_completa, json=payload)
                 
-                # PROTEÇÃO: Verifica se o servidor aceitou a chamada antes de tratar o JSON
+                # 4. Tratamento seguro da resposta do servidor
                 if response.status_code != 200:
                     st.error(f"Erro da API do Google (Código {response.status_code})")
                     st.text(f"Detalhes do erro do servidor:\n{response.text}")
                 else:
                     data = response.json()
                     
-                    # Navegação segura pelos índices da lista da resposta oficial do Gemini
+                    # Navegação segura pela estrutura de dados
                     if 'candidates' in data and len(data['candidates']) > 0:
                         candidate = data['candidates'][0]
                         if 'content' in candidate and 'parts' in candidate['content'] and len(candidate['content']['parts']) > 0:
@@ -61,6 +60,6 @@ if st.button("Buscar Informações"):
                             st.warning("A estrutura de conteúdo esperada não foi encontrada na resposta.")
                     else:
                         st.warning("Nenhum resultado foi retornado pelo modelo para esta pesquisa.")
-                    
+                        
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
