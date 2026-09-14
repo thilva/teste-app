@@ -26,10 +26,10 @@ if st.button("Buscar Informações"):
         st.warning("Por favor, digite o que deseja procurar.")
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
-            try:
-                # 1. URL e parâmetros isolados
-                url = "https://googleapis.com"
-                params = {"key": api_key}
+             try:
+                # CORREÇÃO DEFINITIVA DA URL: Montamos a string de forma direta e unificada
+                # Isso impede o servidor do Google de redirecionar a chamada para a página inicial '/'
+                url_completa = f"https://googleapis.com{api_key}"
                 
                 # 2. Estrutura de dados exata exigida pelo Gemini
                 payload = {
@@ -40,19 +40,27 @@ if st.button("Buscar Informações"):
                     }]
                 }
                 
-                # 3. Envio da requisição
-                response = requests.post(url, params=params, json=payload)
+                # 3. Envio da requisição direta usando apenas a URL unificada
+                response = requests.post(url_completa, json=payload)
                 
-                # PROTEÇÃO: Se não for 200, exibe o texto bruto do erro antes de tentar converter para JSON
+                # PROTEÇÃO: Verifica se o servidor aceitou a chamada antes de tratar o JSON
                 if response.status_code != 200:
                     st.error(f"Erro da API do Google (Código {response.status_code})")
                     st.text(f"Detalhes do erro do servidor:\n{response.text}")
                 else:
                     data = response.json()
-                    # CORREÇÃO DA EXTRAÇÃO: Acessando os índices corretos [0] da lista da API
-                    texto_resposta = data['candidates'][0]['content']['parts'][0]['text']
-                    st.subheader("📊 Resultados Encontrados:")
-                    st.markdown(texto_resposta)
+                    
+                    # Navegação segura pelos índices da lista da resposta oficial do Gemini
+                    if 'candidates' in data and len(data['candidates']) > 0:
+                        candidate = data['candidates'][0]
+                        if 'content' in candidate and 'parts' in candidate['content'] and len(candidate['content']['parts']) > 0:
+                            texto_resposta = candidate['content']['parts'][0]['text']
+                            st.subheader("📊 Resultados Encontrados:")
+                            st.markdown(texto_resposta)
+                        else:
+                            st.warning("A estrutura de conteúdo esperada não foi encontrada na resposta.")
+                    else:
+                        st.warning("Nenhum resultado foi retornado pelo modelo para esta pesquisa.")
                     
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
