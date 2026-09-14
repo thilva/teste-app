@@ -27,24 +27,27 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # 1. Configuração da URL oficial da API do Gemini utilizando a sua chave diretamente
-                url = f"https://googleapis.com{api_key}"
+                # 1. URL limpa e isolada (Usando a API v1beta do Gemini 2.5 Flash)
+                # Garanta que a sua chave entra estritamente após o '?key='
+                url = "https://googleapis.com"
+                params = {"key": api_key}
                 
-                # 2. Estrutura de dados exata que a API da Google espera
+                # 2. Estrutura de dados para o modelo
                 payload = {
                     "contents": [{
                         "parts": [{
-                            "text": f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
+                            "text": f"Você é um assistente esportivo em tempo real. Forneça as informações esportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                         }]
                     }]
                 }
                 
-                # 3. Envio da requisição direta via HTTP POST
-                response = requests.post(url, json=payload)
+                # 3. Envio da requisição separando os parâmetros da URL para evitar erros de colagem
+                response = requests.post(url, params=params, json=payload)
                 data = response.json()
                 
-                # 4. Tratamento da resposta ou exibição de erros da API
+                # 4. Tratamento da resposta
                 if response.status_code == 200:
+                    # Coleta o texto de dentro da estrutura correta da Google
                     texto_resposta = data['candidates'][0]['content']['parts'][0]['text']
                     st.subheader("📊 Resultados Encontrados:")
                     st.markdown(texto_resposta)
