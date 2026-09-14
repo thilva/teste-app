@@ -1,6 +1,5 @@
 import streamlit as st
 from google import genai
-from google.genai import types
 
 # Configuração da página do Streamlit
 st.set_page_config(page_title="Resultados Desportivos Ao Vivo", page_icon="⚽", layout="wide")
@@ -28,10 +27,10 @@ if st.button("Buscar Informações"):
                 # 1. Inicializa o cliente oficial com a nova chave AQ...
                 client = genai.Client(api_key=api_key)
                 
-                # 2. Configuração corrigida para a pesquisa Google (evita o erro extra_forbidden)
-                config = types.GenerateContentConfig(
-                    google_search_retrieval=types.GoogleSearchRetrieval()
-                )
+                # 2. Configuração em formato de dicionário simples (Evita qualquer erro do Pydantic)
+                config = {
+                    "google_search_retrieval": {}
+                }
                 
                 # 3. Faz a chamada ao modelo adequado (gemini-2.5-flash)
                 response = client.models.generate_content(
@@ -47,7 +46,7 @@ if st.button("Buscar Informações"):
                 # Exibe as fontes da pesquisa se disponíveis
                 if response.candidates and response.candidates[0].grounding_metadata:
                     metadata = response.candidates[0].grounding_metadata
-                    if metadata.web_search_queries:
+                    if hasattr(metadata, 'web_search_queries') and metadata.web_search_queries:
                         st.info(f"Fontes pesquisadas: {', '.join(metadata.web_search_queries)}")
 
             except Exception as e:
