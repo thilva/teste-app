@@ -28,10 +28,11 @@ if st.button("Buscar Informações"):
                 # 1. Inicializa o cliente oficial com a nova chave AQ...
                 client = genai.Client(api_key=api_key)
                 
-                # O AJUSTE ESTÁ AQUI: Ativação direta usando a classe de configuração oficial
-                config = types.GenerateContentConfig(
-                    google_search_retrieval=types.GoogleSearchRetrieval()
-                )
+                # CORREÇÃO DEFINITIVA: Passar a configuração como um dicionário de texto direto
+                # Isso impede o Pydantic de analisar o objeto e travar o código
+                config = {
+                    "google_search_retrieval": {"dynamic_retrieval_config": {}}
+                }
                 
                 # 3. Faz a chamada ao modelo adequado (gemini-2.5-flash)
                 response = client.models.generate_content(
