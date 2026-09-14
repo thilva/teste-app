@@ -17,7 +17,7 @@ query = st.text_input(
     placeholder="Ex: Resultados dos jogos da Champions League de hoje"
 )
 
-if st.button("Buscar Informações"):
+try:
     if not api_key:
         st.error("Por favor, insira a sua Chave de API para continuar.")
     elif not query:
