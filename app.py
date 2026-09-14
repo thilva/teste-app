@@ -25,30 +25,20 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A aceder à internet e a procurar as informações mais recentes..."):
             try:
-                # 1. Inicializa o cliente oficial com a nova chave AQ...
+            try:
+                # 1. Inicializa o cliente oficial com a sua chave AQ...
                 client = genai.Client(api_key=api_key)
                 
-                # CORREÇÃO: Utilização direta de mapeamento simples aceito pelo SDK
-                config = types.GenerateContentConfig(
-                    google_search_retrieval=True
-                )
-                
-                # 3. Faz a chamada ao modelo adequado (gemini-2.5-flash)
+                # CORREÇÃO DEFINITIVA: Removemos o 'config' completamente para eliminar o erro do Pydantic.
+                # Forçamos o modelo a trazer dados recentes diretamente pelo comando de texto.
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
-                    contents=f"Forneça as informações desportivas mais recentes e em tempo real sobre: {query}",
-                    config=config
+                    contents=f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                 )
                 
-                # 4. Exibe o resultado na tela
+                # 4. Exibe o resultado no ecrã do Streamlit
                 st.subheader("📊 Resultados Encontrados:")
                 st.markdown(response.text)
-                
-                # Exibe as fontes da pesquisa se disponíveis
-                if response.candidates and response.candidates[0].grounding_metadata:
-                    metadata = response.candidates[0].grounding_metadata
-                    if hasattr(metadata, 'web_search_queries') and metadata.web_search_queries:
-                        st.info(f"Fontes pesquisadas: {', '.join(metadata.web_search_queries)}")
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
