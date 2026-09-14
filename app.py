@@ -27,12 +27,11 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-                # 1. URL limpa e isolada (Usando a API v1beta do Gemini 2.5 Flash)
-                # Garanta que a sua chave entra estritamente após o '?key='
+                # 1. URL e parâmetros isolados
                 url = "https://googleapis.com"
                 params = {"key": api_key}
                 
-                # 2. Estrutura de dados para o modelo
+                # 2. Estrutura de dados exata exigida pelo Gemini
                 payload = {
                     "contents": [{
                         "parts": [{
@@ -41,19 +40,19 @@ if st.button("Buscar Informações"):
                     }]
                 }
                 
-                # 3. Envio da requisição separando os parâmetros da URL para evitar erros de colagem
+                # 3. Envio da requisição
                 response = requests.post(url, params=params, json=payload)
-                data = response.json()
                 
-                # 4. Tratamento da resposta
-                if response.status_code == 200:
-                    # Coleta o texto de dentro da estrutura correta da Google
+                # PROTEÇÃO: Se não for 200, exibe o texto bruto do erro antes de tentar converter para JSON
+                if response.status_code != 200:
+                    st.error(f"Erro da API do Google (Código {response.status_code})")
+                    st.text(f"Detalhes do erro do servidor:\n{response.text}")
+                else:
+                    data = response.json()
+                    # CORREÇÃO DA EXTRAÇÃO: Acessando os índices corretos [0] da lista da API
                     texto_resposta = data['candidates'][0]['content']['parts'][0]['text']
                     st.subheader("📊 Resultados Encontrados:")
                     st.markdown(texto_resposta)
-                else:
-                    erro_msg = data.get('error', {}).get('message', 'Erro desconhecido')
-                    st.error(f"Erro da API do Google ({response.status_code}): {erro_msg}")
                     
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
