@@ -8,7 +8,7 @@ st.title("⚽ Busca de Informações Desportivas em Tempo Real")
 st.write("Obtenha os resultados, jogos e notícias desportivas mais recentes com o Gemini.")
 
 # Entrada da Chave de API (Começando com AQ...)
-api_key = st.text_input("AQ.Ab8RN6LRVXTnfUKdoTqVNbE1FA1T-AFq2gPfiQzNnmUBZuSAMA", type="password")
+api_key = st.text_input("Insira a sua Chave de API do Google AI (prefixo AQ...):", type="password")
 
 # Entrada da pesquisa do utilizador
 query = st.text_input(
@@ -23,11 +23,11 @@ if st.button("Buscar Informações"):
         st.warning("Por favor, digite o que deseja procurar.")
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
-             try:
-                # Isolamos completamente o endereço para o Python nunca juntar as palavras
+            try:
+                # Isolamos completamente a URL para o Python nunca juntar as palavras
                 url_base = "https://googleapis.com"
                 
-                # Remove espaços em branco que possam vir na chave por engano
+                # Remove espaços em branco invisíveis que possam vir na colagem da chave
                 chave_limpa = api_key.strip()
                 
                 url_completa = f"{url_base}?key={chave_limpa}"
@@ -50,10 +50,11 @@ if st.button("Buscar Informações"):
                 else:
                     data = response.json()
                     
+                    # Correção e navegação segura pelos índices [0] das listas da API do Gemini
                     if 'candidates' in data and len(data['candidates']) > 0:
-                        candidate = data['candidates'][0]  # Correção do índice da lista
+                        candidate = data['candidates'][0]
                         if 'content' in candidate and 'parts' in candidate['content'] and len(candidate['content']['parts']) > 0:
-                            texto_resposta = candidate['content']['parts'][0]['text']  # Correção do índice da lista
+                            texto_resposta = candidate['content']['parts'][0]['text']
                             st.subheader("📊 Resultados Encontrados:")
                             st.markdown(texto_resposta)
                         else:
