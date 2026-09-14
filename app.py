@@ -23,9 +23,14 @@ if st.button("Buscar Informações"):
         st.warning("Por favor, digite o que deseja procurar.")
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
-            try:
-                # URL oficial unificada e isolada. A chave de API entra estritamente após o '?key='
-                url_completa = f"https://googleapis.com{api_key}"
+             try:
+                # Isolamos completamente o endereço para o Python nunca juntar as palavras
+                url_base = "https://googleapis.com"
+                
+                # Remove espaços em branco que possam vir na chave por engano
+                chave_limpa = api_key.strip()
+                
+                url_completa = f"{url_base}?key={chave_limpa}"
                 
                 # Estrutura de dados exata exigida pelo Gemini
                 payload = {
@@ -36,21 +41,19 @@ if st.button("Buscar Informações"):
                     }]
                 }
                 
-                # Envio da requisição direta via HTTP POST
+                # Envio da requisição
                 response = requests.post(url_completa, json=payload)
                 
-                # Verifica se o servidor aceitou a chamada antes de tratar o JSON
                 if response.status_code != 200:
                     st.error(f"Erro da API do Google (Código {response.status_code})")
                     st.text(f"Detalhes do erro do servidor:\n{response.text}")
                 else:
                     data = response.json()
                     
-                    # Navegação segura pelos índices e listas da resposta do Gemini 2.5
                     if 'candidates' in data and len(data['candidates']) > 0:
-                        candidate = data['candidates'][0]
+                        candidate = data['candidates'][0]  # Correção do índice da lista
                         if 'content' in candidate and 'parts' in candidate['content'] and len(candidate['content']['parts']) > 0:
-                            texto_resposta = candidate['content']['parts'][0]['text']
+                            texto_resposta = candidate['content']['parts'][0]['text']  # Correção do índice da lista
                             st.subheader("📊 Resultados Encontrados:")
                             st.markdown(texto_resposta)
                         else:
