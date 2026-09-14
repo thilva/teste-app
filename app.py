@@ -23,20 +23,18 @@ if st.button("Buscar Informações"):
     elif not query:
         st.warning("Por favor, digite o que deseja procurar.")
     else:
-        with st.spinner("A aceder à internet e a procurar as informações mais recentes..."):
+        with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-            try:
-                # 1. Inicializa o cliente oficial com a sua chave AQ...
+                # 1. Inicializa o cliente oficial com a nova chave AQ...
                 client = genai.Client(api_key=api_key)
                 
-                # CORREÇÃO DEFINITIVA: Removemos o 'config' completamente para eliminar o erro do Pydantic.
-                # Forçamos o modelo a trazer dados recentes diretamente pelo comando de texto.
+                # 2. Faz a chamada direta ao modelo sem usar o config problemático
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
                     contents=f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                 )
                 
-                # 4. Exibe o resultado no ecrã do Streamlit
+                # 3. Exibe o resultado no ecrã do Streamlit
                 st.subheader("📊 Resultados Encontrados:")
                 st.markdown(response.text)
 
