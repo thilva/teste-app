@@ -25,25 +25,21 @@ if st.button("Buscar Informações"):
     else:
         with st.spinner("A processar as informações desportivas mais recentes..."):
             try:
-            try:
-                # CORREÇÃO DEFINITIVA PARA O ERRO 401:
-                # Passamos a chave de forma explícita e configuramos também o parâmetro http_options 
-                # para garantir que o cabeçalho correto de API Key é enviado.
+                # 1. Inicializa o cliente forçando o cabeçalho correto para evitar o erro 401
                 client = genai.Client(
                     api_key=api_key,
                     http_options={'headers': {'x-goog-api-key': api_key}}
                 )
                 
-                # Faz a chamada direta ao modelo 
+                # 2. Faz a chamada direta ao modelo 
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
                     contents=f"Você é um assistente desportivo em tempo real. Forneça as informações desportivas mais recentes, resultados ao vivo e dados atualizados de hoje sobre: {query}"
                 )
                 
-                # Exibe o resultado no ecrã do Streamlit
+                # 3. Exibe o resultado no ecrã do Streamlit
                 st.subheader("📊 Resultados Encontrados:")
                 st.markdown(response.text)
-
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
