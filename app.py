@@ -17,7 +17,7 @@ query = st.text_input(
     placeholder="Ex: Resultados dos jogos da Champions League de hoje"
 )
 
-try:
+if st.button("Buscar Informações"):
     if not api_key:
         st.error("Por favor, insira a sua Chave de API para continuar.")
     elif not query:
@@ -28,15 +28,9 @@ try:
                 # 1. Inicializa o cliente oficial com a nova chave AQ...
                 client = genai.Client(api_key=api_key)
                 
-                # 2. Configura o modelo para pesquisar na Web (Google Search Grounding)
-                # Isso resolve o erro 404/405 e traz dados de hoje/ao vivo
+                # 2. Configuração corrigida para a pesquisa Google (evita o erro extra_forbidden)
                 config = types.GenerateContentConfig(
-                    google_search_retrieval=types.GoogleSearchRetrieval(
-                        dynamic_retrieval_config=types.DynamicRetrievalConfig(
-                            mode="MODE_DYNAMIC",
-                            dynamic_threshold=0.3,
-                        )
-                    )
+                    google_search_retrieval=types.GoogleSearchRetrieval()
                 )
                 
                 # 3. Faz a chamada ao modelo adequado (gemini-2.5-flash)
@@ -58,4 +52,4 @@ try:
 
             except Exception as e:
                 st.error(f"Ocorreu um erro ao processar a requisição: {e}")
-                st.info("Verifique se a sua chave de API está correta e se a biblioteca 'google-genai' está atualizada.")
+                st.info("Verifique se a sua chave de API está correta.")
